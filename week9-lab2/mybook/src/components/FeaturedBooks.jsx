@@ -13,11 +13,12 @@ const FeaturedBooks = () => {
         setLoading(true);
         
         // เรียก API เพื่อดึงข้อมูลหนังสือ
-        const response = await fetch('/api/v1/books/');
+        const response = await fetch('http://localhost:8080/api/v1/books');
 
         if (!response.ok) {
           throw new Error('Failed to fetch books');
         }
+        // ถ้าไม่สำเร็จจะโยน Error
 
         const data = await response.json();
 
@@ -67,6 +68,7 @@ const FeaturedBooks = () => {
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
       {featuredBooks.map(book => (
+        //แสดงผลผ่าน BookCard component
         <BookCard 
           key={book.id} 
           book={book} 
