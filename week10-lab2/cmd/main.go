@@ -1,13 +1,11 @@
 package main
 
 import (
-	_ "week10-lab2/docs" // ให้ Swag สร้างเอกสารใน Folder docs โดยอัตโนมัติ
-
+	_ "week10-lab2/docs"
 	"week10-lab2/internal/handler"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
@@ -19,15 +17,17 @@ import (
 // @BasePath        /api/v1
 func main() {
 	r := gin.Default()
-	r.Use(cors.Default())
 
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	r.Use(cors.New(config))
 	// Swagger endpoint
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// User API routes
 	api := r.Group("/api/v1")
 	{
-		api.GET("/books/:id", handler.GetBookByID) // ใช้ Handler จากไฟล์ book_handler.go
+		api.GET("books/:id", handler.GetBookByID) // ใช้ Handler จากไฟล์ book_handler.go
 	}
 
 	// Start server

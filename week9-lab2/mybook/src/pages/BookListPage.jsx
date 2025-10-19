@@ -3,7 +3,7 @@ import BookCard from '../components/BookCard';
 import SearchBar from '../components/SearchBar';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { ChevronDownIcon } from '@heroicons/react/outline';
-
+import { getAllBooks } from '../data/booksData';
 
 const BookListPage = () => {
   const [books, setBooks] = useState([]);
@@ -18,41 +18,23 @@ const BookListPage = () => {
     'all', 'fiction', 'non-fiction', 'science', 'history', 'art', 
     'psychology', 'business', 'technology', 'cooking'
   ];
-  const [error, setError] = useState(null);
+
+  const fetchBooks = async () => {
+    setLoading(true);
+    try {
+      const data = await fetch('/api/v1/books/').then(res => res.json());
+      setBooks(data);
+      setFilteredBooks(data);
+    } catch (error) {
+      console.error('Error fetching books:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
   useEffect(() => {
-      const fetchBooks = async () => {
-        try {
-          setLoading(true);
-          
-          // เรียก API เพื่อดึงข้อมูลหนังสือ
-          const response = await fetch('http://localhost:8080/api/v1/books');
-  
-          if (!response.ok) {
-            throw new Error('Failed to fetch books');
-          }
-          // ถ้าไม่สำเร็จจะโยน Error
-  
-          const data = await response.json();
-  
-          // สุ่มหนังสือ 3 เล่ม
-          setBooks(data);         // เก็บข้อมูลทั้งหมดไว้ใน state books
-          setFilteredBooks(data);
-  
-          setFeaturedBooks(selected);
-          setError(null);
-          
-        } catch (err) {
-          setError(err.message);
-          console.error('Error fetching books:', err);
-          
-        } finally {
-          setLoading(false);
-        }
-      };
-  
-      // เรียกใช้ฟังก์ชันดึงข้อมูล
-      fetchBooks();
-    }, []);
+    fetchBooks();
+  }, []);
 
   const handleSearch = (searchTerm) => {
     const filtered = books.filter(book => 

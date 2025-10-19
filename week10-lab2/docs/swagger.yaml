@@ -4,7 +4,7 @@ definitions:
     properties:
       id:
         type: integer
-      name:
+      title:
         type: string
     type: object
   handler.ErrorResponse:
@@ -19,9 +19,9 @@ info:
   title: Simple API Example
   version: "1.0"
 paths:
-  /Book/{id}:
+  /books/{id}:
     get:
-      description: Get details of a Book by ID
+      description: Get details of a book by ID
       parameters:
       - description: Book ID
         in: path
@@ -39,7 +39,7 @@ paths:
           description: Not Found
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
-      summary: Get Book by ID
+      summary: Get book by ID
       tags:
-      - Book
+      - Books
 swagger: "2.0"

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -34,26 +35,19 @@ var db *sql.DB
 
 func initDB() {
 	var err error
-	host := getEnv("DB_HOST", "")
-	name := getEnv("DB_NAME", "")
-	user := getEnv("DB_USER", "")
-	password := getEnv("DB_PASSWORD", "")
-	port := getEnv("DB_PORT", "")
+	host := getEnv("DB_HOST", "localhost")
+	port := getEnv("DB_PORT", "5432")
+	user := getEnv("DB_USER", "bookstore_user")
+	password := getEnv("DB_PASSWORD", "your_strong_password")
+	name := getEnv("DB_NAME", "bookstore")
 
-	conSt := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, name)
-	//fmt.Println(conSt)
+	conStr := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		host, port, user, password, name)
 
-	db, err = sql.Open("postgres", conSt)
+	db, err = sql.Open("postgres", conStr)
 	if err != nil {
-		log.Fatal("failed to open database ", err)
+		log.Fatal("Failed to open database:", err)
 	}
-
-	err = db.Ping()
-	if err != nil {
-		log.Fatal("failed to connect database ", err)
-	}
-
-	log.Println("successfully connected to database")
 
 	// กำหนดจำนวน Connection สูงสุด
 	db.SetMaxOpenConns(25)
@@ -63,6 +57,13 @@ func initDB() {
 
 	// กำหนดอายุของ Connection
 	db.SetConnMaxLifetime(5 * time.Minute)
+
+	err = db.Ping()
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
+
+	log.Println("Connected to the database successfully!")
 }
 
 func getAllBooks(c *gin.Context) {
@@ -90,11 +91,9 @@ func getAllBooks(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, books)
-
 }
 
 func getBook(c *gin.Context) {
-
 	id := c.Param("id")
 	var book Book
 
@@ -145,7 +144,6 @@ func createBook(c *gin.Context) {
 }
 
 func updateBook(c *gin.Context) {
-
 	var ID int
 	id := c.Param("id")
 	var updateBook Book
@@ -202,14 +200,14 @@ func deleteBook(c *gin.Context) {
 
 func main() {
 	initDB()
-	defer db.Close() //clear resource
+	defer db.Close()
 
 	r := gin.Default()
 
 	r.GET("/health", func(c *gin.Context) {
 		err := db.Ping()
 		if err != nil {
-			c.JSON(http.StatusServiceUnavailable, gin.H{"message": "unhealhty", "error": err})
+			c.JSON(http.StatusServiceUnavailable, gin.H{"message": "unheathy", "error": err})
 			return
 		}
 		c.JSON(200, gin.H{"message": "healthy"})
@@ -223,9 +221,5 @@ func main() {
 		api.PUT("/books/:id", updateBook)
 		api.DELETE("/books/:id", deleteBook)
 	}
-
-	r.Run(":8080")
+	r.Run(":8081")
 }
-
-//go get github.com/lib/pq
-//go get github.com/gin-gonic/gin
