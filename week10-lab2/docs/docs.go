@@ -15,16 +15,16 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/Book/{id}": {
+        "/books/{id}": {
             "get": {
-                "description": "Get details of a Book by ID",
+                "description": "Get details of a book by ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Book"
+                    "Books"
                 ],
-                "summary": "Get Book by ID",
+                "summary": "Get book by ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -58,7 +58,7 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "name": {
+                "title": {
                     "type": "string"
                 }
             }
